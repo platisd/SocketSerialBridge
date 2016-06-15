@@ -13,7 +13,7 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 	private boolean portOpen = false; //if the port has been successfully opened this is true 
 	final private String defaultPort = "/dev/ttyACM0"; //the default serial port (linux)
 	private SerialPort serialPort;
-	private String packetDelimiter = "\n";
+	private String packetDelimiter = "*";
 	private long serialTimeout = 10; //the amount of time we shall wait for a "packet" to finish
 	private BlockingQueue<String> socketData = new PriorityBlockingQueue<String>();
 
