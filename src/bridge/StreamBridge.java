@@ -1,6 +1,12 @@
 package bridge;
 
 
+/**
+ * Connects two DataStream classes. It suggested for the DataStream classes to provide their own blocking mechanisms
+ * for their read() and write() methods.
+ * 
+ * @author platisd
+ */
 public class StreamBridge implements Runnable {
 	DataStream producer;
 	DataStream consumer;
@@ -13,7 +19,7 @@ public class StreamBridge implements Runnable {
 	@Override
 	public void run() {
 		while(true){
-			consumer.write(producer.getData()); //waits until data is available, fetches them and then writes them to the other stream
+			consumer.write(producer.read()); //waits until data is available, fetches them and then writes them to the other stream
 		}
 	}
 
