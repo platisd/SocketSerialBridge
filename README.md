@@ -4,6 +4,10 @@ A simple program written in Java to to have a 2-way bridge between web sockets a
 ### How to run
 The easiest way I have found to run this, is extract the project as a runnable JAR through eclipse and then then run it with `java -jar yourJarName.jar`
 
+### Class diagram
+Here is a (rather abstract) class diagram, that should give you an overview of how things are structured and run.
+![class diagram](http://i.imgur.com/UJ10WyS.png)
+
 ### Troubleshooting
 When I first tried to run the .jar in the Raspberry Pi, I kept getting an UnsatisfiedLinkError. This was solved easily, please have a look at this [issue](https://github.com/scream3r/java-simple-serial-connector/issues/93).
 
