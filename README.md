@@ -6,7 +6,7 @@ The easiest way I have found to run this, is extract the project as a runnable J
 
 ### Class diagram
 Here is a (rather abstract) class diagram, that should give you an overview of how things are structured and run.
-![class diagram](http://i.imgur.com/UJ10WyS.png)
+![class diagram](http://i.imgur.com/WUWaJ3T.png)
 
 ### Troubleshooting
 When I first tried to run the .jar in the Raspberry Pi, I kept getting an UnsatisfiedLinkError. This was solved easily, please have a look at this [issue](https://github.com/scream3r/java-simple-serial-connector/issues/93).
