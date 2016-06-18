@@ -123,17 +123,16 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 			if(event.getEventValue()>0){//Check bytes count in the input buffer
 				//Read data, if bytes available 
 				try {
-					//	System.out.print(serialPort.readString());
-					String incomingCharacter = serialPort.readString(1); //read just one character/byte from the stream
-					long currentTime = System.currentTimeMillis(); //log down the current time
+					long startTime = System.currentTimeMillis(); //log down the current time before entering the loop
 					String incomingPacket = ""; //here the incoming packet will be stored as a string
-					while (!incomingCharacter.equals(packetDelimiter) && //the incoming character is not the delimiter
-							currentTime - System.currentTimeMillis() < serialTimeout){ //AND we have not timed-out
+					String incomingCharacter = ""; //initializing an empty incoming character variable
+					do{
+						incomingCharacter = serialPort.readString(1); //read just one character/byte from the stream
 						if (incomingCharacter != null){
-							incomingPacket += incomingCharacter; //don't include the delimiter mainly so we don't get packages of just the delimiter
+							incomingPacket += incomingCharacter;
 						}
-						incomingCharacter = serialPort.readString(1); //read the next character
-					}
+					}while(!incomingCharacter.equals(packetDelimiter) && //the incoming character is not the delimiter
+							System.currentTimeMillis() - startTime < serialTimeout); //AND we have run out of time
 					if (!incomingPacket.equals(packetDelimiter)){ //if the packet doesn't just contain only the delimiter
 						//System.out.println("Bridge received from serial: " + incomingPacket); //print out the packet that is about to be saved
 						serialData.put(incomingPacket); //add the packet to the list to be transmitted via the socket
