@@ -64,7 +64,7 @@ public class SocketServer implements Runnable, DataStream{
 
 	public void run(){ //this will run in parallel to the main thread
 		try {
-			System.out.println("Opened port" + serverPort + " and waiting");
+			System.out.println("Opened port " + serverPort + " and waiting");
 			server = new ServerSocket(serverPort); //initialize a new connection (if port already in use an error will be thrown)
 			while (true) {
 				socketInitialized = false;
