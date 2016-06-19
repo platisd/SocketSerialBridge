@@ -3,7 +3,6 @@ package sockets;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.BindException;
 import java.util.Vector;
 
 /**
@@ -64,11 +63,10 @@ public class MultiSocketServer extends SocketServer {
 				put(input); //save the data in order to be transmitted to the serial port
 
 			}
-		} catch (BindException e) {
-			System.out.println("Port already in use. Start another server with a different"
-					+ " port using the setPort(port) command");
+			reader.close();
+			out.close();
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 }

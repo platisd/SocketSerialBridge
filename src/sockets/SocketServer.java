@@ -49,6 +49,9 @@ public class SocketServer implements Runnable, DataStream{
 	private void init() {
 		try {
 			server = new ServerSocket(getPort());  //initialize a new connection (if port already in use an error will be thrown)
+		} catch (BindException e) {
+			System.out.println("Port already in use. Start another server with a different"
+					+ " port using the setPort(port) command");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -115,11 +118,8 @@ public class SocketServer implements Runnable, DataStream{
 					put(input); //save the data in order to be transmitted to the serial port
 				}
 			}
-		} catch (BindException e) {
-			System.out.println("Port already in use. Start another server with a different"
-					+ " port using the setPort(port) command");
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 }
