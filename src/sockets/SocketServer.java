@@ -21,7 +21,7 @@ public class SocketServer implements Runnable, DataStream{
 	protected ServerSocket server;
 	private int serverPort = 8088; //the default port this server instance will listen to
 	protected Socket socket;	
-	protected PrintWriter out;
+	private PrintWriter out;
 	private BlockingQueue<String> socketData = new PriorityBlockingQueue<String>(); //FIFO data structure to save the incoming data
 
 

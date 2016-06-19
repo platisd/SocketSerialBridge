@@ -52,7 +52,7 @@ public class MultiSocketServer extends SocketServer {
 			System.out.println("Opened port " + getPort() + " and waiting");
 			socket = server.accept(); //wait until a user is connected
 			System.out.println("Got a user connection!");
-			out = new PrintWriter(socket.getOutputStream(), true); //out will now write to the particular socket
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true); //out will now write to the particular socket
 			out.println("Hi, you are connected"); //welcome message sent to the connected client
 			connectedSockets.add(out); //save it so we can broadcast to it later
 			new Thread(this).start(); //start a new thread and wait for another connection
