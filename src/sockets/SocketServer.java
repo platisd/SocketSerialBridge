@@ -1,6 +1,7 @@
 package sockets;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.BindException;
@@ -11,17 +12,17 @@ import java.util.concurrent.PriorityBlockingQueue;
 import bridge.DataStream;
 
 /**
- * A simple server that handled socket. One user at a time, but could be modified
- * to handle more, if that makes sense for your application.
+ * A simple server that handles web sockets. One user at a time. If you want to handle more than one,
+ * then use the MultiSocketServer instead.
  * 
  * @author platisd
  */
 public class SocketServer implements Runnable, DataStream{
-	private ServerSocket server;
-	private int serverPort = 8088; //the default port this server instance will listen to
-	private Socket socket;	
-	private PrintWriter out;
-	private boolean socketInitialized = false; //if this is false, it means that there is not connection atm
+	protected ServerSocket server;
+	protected int serverPort = 8088; //the default port this server instance will listen to
+	protected Socket socket;	
+	protected PrintWriter out;
+	protected boolean socketInitialized = false; //if this is false, it means that there is not connection atm
 	private BlockingQueue<String> socketData = new PriorityBlockingQueue<String>(); //FIFO data structure to save the incoming data
 
 
@@ -30,6 +31,7 @@ public class SocketServer implements Runnable, DataStream{
 	 * (serverPort) to listen for incoming connections.
 	 */
 	public SocketServer() {
+		init();
 	}
 	
 	/**
@@ -39,6 +41,19 @@ public class SocketServer implements Runnable, DataStream{
 	 */
 	public SocketServer(int serverPort){
 		this.serverPort = serverPort;
+		init();
+	}
+
+	/**
+	 * 
+	 */
+	private void init() {
+		try {
+			server = new ServerSocket(serverPort);  //initialize a new connection (if port already in use an error will be thrown)
+			System.out.println("Opened port " + serverPort + " and waiting");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void write(String s){
@@ -61,11 +76,21 @@ public class SocketServer implements Runnable, DataStream{
 		}
 		return null;
 	}
+	
+	/**
+	 * The method that saves/adds a string to the BlockingQueue data structure
+	 * @param The string to be added in the BlockingQueue data structure
+	 */
+	protected void put(String input){
+		try {
+			socketData.put(input);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void run(){ //this will run in parallel to the main thread
 		try {
-			System.out.println("Opened port " + serverPort + " and waiting");
-			server = new ServerSocket(serverPort); //initialize a new connection (if port already in use an error will be thrown)
 			while (true) {
 				socketInitialized = false;
 				socket = server.accept(); //wait until a user is connected
@@ -78,7 +103,7 @@ public class SocketServer implements Runnable, DataStream{
 				while ((input = reader.readLine()) != null) {
 					//System.out.println("Bridge received from socket: " + input); //uncomment if you want to print whatever is being received
 					//write("You wrote: " + input); //uncomment if you want to echo back to the client whatever is being received
-					socketData.put(input); //save the data in order to be transmitted to the serial port
+					put(input); //save the data in order to be transmitted to the serial port
 				}
 			}
 		} catch (BindException e) {

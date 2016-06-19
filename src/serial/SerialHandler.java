@@ -117,30 +117,42 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 		this.serialTimeout = serialTimeout;
 	}
 
+	/**
+	 * The method that saves/adds a string to the BlockingQueue data structure
+	 * @param The string to be added in the BlockingQueue data structure
+	 */
+	private void put(String input){
+		try {
+			serialData.put(input);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		if(event.isRXCHAR()){//If data is available
-			if(event.getEventValue()>0){//Check bytes count in the input buffer
+			if(event.getEventValue() > 0){//Check bytes count in the input buffer
 				//Read data, if bytes available 
 				try {
 					long startTime = System.currentTimeMillis(); //log down the current time before entering the loop
 					String incomingPacket = ""; //here the incoming packet will be stored as a string
 					String incomingCharacter = ""; //initializing an empty incoming character variable
 					do{
-						incomingCharacter = serialPort.readString(1); //read just one character/byte from the stream
-						if (incomingCharacter != null){
-							incomingPacket += incomingCharacter;
+						if (serialPort.getInputBufferBytesCount() > 0){ //make sure there's at least one byte to read
+							incomingCharacter = serialPort.readString(1); //read just one character/byte from the stream
+							if (incomingCharacter != null){
+								incomingPacket += incomingCharacter;
+							}
 						}
 					}while(!incomingCharacter.equals(packetDelimiter) && //the incoming character is not the delimiter
 							System.currentTimeMillis() - startTime < serialTimeout); //AND we have run out of time
 					if (!incomingPacket.equals(packetDelimiter)){ //if the packet doesn't just contain only the delimiter
 						//System.out.println("Bridge received from serial: " + incomingPacket); //print out the packet that is about to be saved
-						serialData.put(incomingPacket); //add the packet to the list to be transmitted via the socket
+						put(incomingPacket); //add the packet to the list to be transmitted via the socket
 					}
 				}catch (SerialPortException ex) {
 					System.out.println(ex);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 		}
