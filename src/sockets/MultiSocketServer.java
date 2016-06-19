@@ -49,7 +49,7 @@ public class MultiSocketServer extends SocketServer {
 	@Override
 	public void run(){ //this will run in parallel to the main thread
 		try {
-			System.out.println("Opened port " + getPort() + " and waiting");
+			System.out.println("Opened port " + getPort() + " and waiting for multiple clients");
 			socket = server.accept(); //wait until a user is connected
 			System.out.println("Got a user connection!");
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true); //out will now write to the particular socket
