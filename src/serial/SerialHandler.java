@@ -17,7 +17,6 @@ import jssc.SerialPortList;
  * @author platisd
  */
 public class SerialHandler implements  SerialPortEventListener, DataStream {
-	private boolean portOpen = false; //if the port has been successfully opened this is true 
 	final private String defaultPort = "/dev/ttyACM0"; //the default serial port (linux)
 	private SerialPort serialPort;
 	private String packetDelimiter = "*"; //the character/byte that will designate when a "packet" from the serial port is complete
@@ -48,9 +47,7 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 	private void initSerial(String port){
 		serialPort = new SerialPort(port); 
 		try {
-			portOpen = false;
 			serialPort.openPort();//Open port
-			portOpen = true;
 			System.out.println("Opened serial port: " + port);
 			serialPort.setParams(
 					SerialPort.BAUDRATE_9600,
@@ -95,7 +92,7 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 	 * @return true if we have successfully established a connection to the serial port, false otherwise.
 	 */
 	public boolean isConnected(){
-		return portOpen;
+		return serialPort.isOpened();
 	}
 
 	/**
@@ -110,7 +107,8 @@ public class SerialHandler implements  SerialPortEventListener, DataStream {
 	}
 
 	/**
-	 * Sets the amount of time to wait for a package to arrive.
+	 * Sets the amount of time to wait for a package to arrive. If package does not arrive during the specified amount of time
+	 * whatever has been accumulated until then is placed in the BlockingQueue structure.
 	 * @param amount of time to wait for a package to arrive in milliseconds.
 	 */
 	public void setTimeout(long serialTimeout){

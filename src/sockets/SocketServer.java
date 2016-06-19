@@ -12,17 +12,16 @@ import java.util.concurrent.PriorityBlockingQueue;
 import bridge.DataStream;
 
 /**
- * A simple server that handles web sockets. One user at a time. If you want to handle more than one,
- * then use the MultiSocketServer instead.
+ * A simple server that handles web sockets. One user at a time and never stops waiting for new ones (the thread doesn't close).
+ *  If you want to handle more than one user, then use the MultiSocketServer instead.
  * 
  * @author platisd
  */
 public class SocketServer implements Runnable, DataStream{
 	protected ServerSocket server;
-	protected int serverPort = 8088; //the default port this server instance will listen to
+	private int serverPort = 8088; //the default port this server instance will listen to
 	protected Socket socket;	
 	protected PrintWriter out;
-	protected boolean socketInitialized = false; //if this is false, it means that there is not connection atm
 	private BlockingQueue<String> socketData = new PriorityBlockingQueue<String>(); //FIFO data structure to save the incoming data
 
 
@@ -45,27 +44,38 @@ public class SocketServer implements Runnable, DataStream{
 	}
 
 	/**
-	 * 
+	 * Initializes the SocketServer
 	 */
 	private void init() {
 		try {
-			server = new ServerSocket(serverPort);  //initialize a new connection (if port already in use an error will be thrown)
-			System.out.println("Opened port " + serverPort + " and waiting");
+			server = new ServerSocket(getPort());  //initialize a new connection (if port already in use an error will be thrown)
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void write(String s){
-		if (isConnected()) out.println(s);
+	/* (non-Javadoc)
+	 * @see bridge.DataStream#write(java.lang.String)
+	 */
+	public void write(String input){
+		if (isConnected()) out.println(input);
 	}
 
 	/**
-	 * Indicates whether a user is connected to the socket or not.
+	 * Indicates whether a user has been connected to the socket or more correctly whether the socket has
+	 * been initialized at least once.
 	 * @return true if a user has been connected to the socket, false otherwise.
 	 */
 	public boolean isConnected(){
-		return socketInitialized;
+		return socket != null;
+	}
+	
+	/**
+	 * Supplies the port this web socket server is currently listening to
+	 * @return port number
+	 */
+	public int getPort(){
+		return serverPort;
 	}
 
 	public String read(){
@@ -91,10 +101,9 @@ public class SocketServer implements Runnable, DataStream{
 
 	public void run(){ //this will run in parallel to the main thread
 		try {
-			while (true) {
-				socketInitialized = false;
+			while (true) { //will accept a new connection after the previous one is closed
+				System.out.println("Opened port " + getPort() + " and waiting");
 				socket = server.accept(); //wait until a user is connected
-				socketInitialized = true;
 				System.out.println("Got a user connection!");
 				out = new PrintWriter(socket.getOutputStream(), true); //out will now write to the particular socket
 				write("Hi, you are connected"); //welcome message sent to the connected client
